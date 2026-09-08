@@ -237,12 +237,12 @@ while (input != 0) {
         for (let i = 0; i < trips.length; i++) {
             if (IdTrip == trips[i].id) {
                 if (SeatNumber > trips[i].availableSeats) {
-                    console.log('pas assez de sièges');break;
+                    console.log('pas assez de sièges'); break;
                 }
                 else {
                     for (let j = 1; j <= SeatNumber; j++) {
                         somme += trips[i].price
-                        
+
                     }
                     tickets.push({ id: (++IdTicket), passengerName: NomPassage, tripId: trips[i].id, seatNumber: SeatNumber, price: somme })
                     trips[i].availableSeats -= SeatNumber;
@@ -251,8 +251,8 @@ while (input != 0) {
             }
             else {
                 count++;
-                if(count == 20){
-                    console.log('aucun trajet trouvé');break;
+                if (count == 20) {
+                    console.log('aucun trajet trouvé'); break;
                 }
             }
         }

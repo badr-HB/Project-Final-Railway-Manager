@@ -192,7 +192,7 @@ while (input != 0) {
     ////////////
     function MenuPrincipal() {
         console.log("\n\n=================================\n    RAILWAY MANAGER    \n=================================");
-        console.log("1. Afficher les trajets\n2. Acheter un ticket\n3. Afficher les tickets\n4. Annuler un ticket\n5. Rechercher un ticket\n6. Filtrer les trajets\n7. Trier les trajets\n0. Quitter\n");
+        console.log("1. Afficher les trajets\n2. Acheter un ticket\n3. Afficher les tickets\n4. Annuler un ticket\n5. Rechercher un ticket\n6. Filtrer les trajets\n7. Trier les trajets\n8. Calculez nombre total des tickets vendu\n9. Chiffre d'affaires total\n10. Trajet le plus vendu\n0. Quitter\n");
         input = Number(prompt('Votre choix: '));
 
         return input;
@@ -222,7 +222,16 @@ while (input != 0) {
                 FilterTrips(); break;
             }
             case 7: {
-                TrierTrips();break;
+                TrierTrips(); break;
+            }
+            case 8: {
+                AffichageGlobal(); break;
+            }
+            case 9: {
+                AffichageGlobal(); break;
+            }
+            case 10: {
+                TripsPlusVendu(); break;
             }
             case 0: {
                 console.log("Quitter...."); break;
@@ -262,6 +271,15 @@ while (input != 0) {
                 }
                 console.log(`Ticket #${tickets[i].id}\nPassager : ${tickets[i].passengerName}\nTrajet : ${DeputTrip} --> ${FinTrip}\nPlace : ${tickets[i].seatNumber}\nPrix : ${tickets[i].price} DH\n`);
             }
+        }
+        if (TheChoice == 8) {
+            const holder = NombreVendu();
+            console.log('Nombre total de tickets : ' + holder);
+        }
+        if (TheChoice == 9) {
+            const holder = ChiffreAffaire();
+            console.log("Chiffre d'affaires total : " + holder);
+
         }
     }
     ///////////
@@ -303,10 +321,6 @@ while (input != 0) {
                 trips[i].availableSeats -= 1;
 
                 console.log("\nTicket acheté avec succès.\n");
-                for (let k = 0; k < tickets.length; k++) {
-                    console.log(`Ticket #${tickets[k].id}\nPassager : ${tickets[k].passengerName}\nTrajet : ${trips[i].departure} --> ${trips[i].destination}\nPlace : ${tickets[k].seatNumber}\nPrix : ${tickets[k].price} DH\n`);
-
-                }
             }
             if (i == trips.length - 1) {
                 if (Notfound) {
@@ -348,6 +362,7 @@ while (input != 0) {
     //////////////
 
     function RechercheTicket() {
+        let count = 0;
         console.log('\nentrer 0 pour retourner au menu\n');
         const nom = String(prompt('Nom du passager : '));
         const obj = [];
@@ -367,6 +382,7 @@ while (input != 0) {
                 if (nom == tickets[k].passengerName) {
                     for (let i = 0; i < trips.length; i++) {
                         if (trips[i].id == tickets[k].tripId) {
+
                             obj.push({
                                 id: tickets[k].id,
                                 name: tickets[k].passengerName,
@@ -375,12 +391,15 @@ while (input != 0) {
                                 seatnum: tickets[k].seatNumber,
                                 prix: tickets[k].price
                             })
-
-                            console.log(`Ticket #${obj[i].id}\nPassager : ${obj[i].name}\nTrajet : ${obj[i].depart} --> ${obj[i].fin}\nPlace : ${obj[i].seatnum}\nPrix : ${obj[i].prix} DH\n`)
+                            ++count;
                         }
                     }
                 }
             }
+        }
+
+        for (let i = 0; i < count; i++) {
+            console.log(`Ticket #${obj[i].id}\nPassager : ${obj[i].name}\nTrajet : ${obj[i].depart} --> ${obj[i].fin}\nPlace : ${obj[i].seatnum}\nPrix : ${obj[i].prix} DH\n`)
         }
     }
 
@@ -421,7 +440,7 @@ while (input != 0) {
     function TrierTrips() {
         let box = 0;
         for (let i = 0; i < trips.length; i++) {
-            for (let j = 0; j < trips.length - i - 1 ; j++) {
+            for (let j = 0; j < trips.length - i - 1; j++) {
                 if (trips[j].price > trips[j + 1].price) {
                     box = trips[j + 1].price;
                     trips[j + 1].price = trips[j].price;
@@ -431,7 +450,53 @@ while (input != 0) {
         }
 
     }
+    //////////////
 
+    function NombreVendu() {
+        let total = 0;
+        for (let i = 0; i < trips.length; i++) {
+            total = total + (50 - trips[i].availableSeats)
+        }
+        return total;
+    }
+    ///////////////
+
+    function ChiffreAffaire() {
+        let total = 0;
+        let taille = 0;
+        for (let i = 0; i < trips.length; i++) {
+            if (trips[i].availableSeats < 50) {
+                taille = 0;
+                taille = taille + (50 - trips[i].availableSeats)
+                for (let j = 0; j < taille; j++) {
+                    total = total + trips[i].price;
+                }
+            }
+        }
+        return total
+    }
+    //////////////
+
+    function TripsPlusVendu() {
+        let min = trips[0].availableSeats;
+
+
+        for (let i = 0; i < trips.length; i++) {
+            if (min > trips[i].availableSeats) {
+                min = trips[i].availableSeats;
+            }
+        }
+
+        const PlusVenduTrip = trips.find((e) => e.availableSeats === min);
+        min = 50 - min;
+        if (min === 0) {
+            console.log('no ticket vendu');
+            return;
+        }
+
+        console.log(`\n${PlusVenduTrip.departure} --> ${PlusVenduTrip.destination}\n${min} tickets vendus`);
+
+    }
 }
 
 ////////////

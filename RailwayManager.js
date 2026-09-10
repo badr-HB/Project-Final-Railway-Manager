@@ -216,7 +216,13 @@ while (input != 0) {
                 AnnulerTicket(); break;
             }
             case 5: {
-                AffichageGlobal(); break;
+                RechercheTicket(); break;
+            }
+            case 6: {
+                FilterTrips(); break;
+            }
+            case 7: {
+                TrierTrips();break;
             }
             case 0: {
                 console.log("Quitter...."); break;
@@ -257,22 +263,22 @@ while (input != 0) {
                 console.log(`Ticket #${tickets[i].id}\nPassager : ${tickets[i].passengerName}\nTrajet : ${DeputTrip} --> ${FinTrip}\nPlace : ${tickets[i].seatNumber}\nPrix : ${tickets[i].price} DH\n`);
             }
         }
-        if (TheChoice == 5) {
-            const holder = RechercheTicket();
-            for (let i = 0; i < holder.length; i++) {
-                console.log(`Ticket #${holder[i].id}\nPassager : ${holder[i].name}\nTrajet : ${holder[i].depart} --> ${holder[i].fin}\nPlace : ${holder[i].seatnum}\nPrix : ${holder[i].prix} DH\n`)
-            }
-        }
-
     }
     ///////////
 
     function AchatDeTicket() {
         let available, box, Notfound = true;
+        console.log('\nentrer 0 pour retourner au menu\n');
         const NomPassage = String(prompt('nom de passager: '));
+        if (NomPassage == 0) {
+            return;
+        }
         const IdTrip = Number(prompt('trip id: '));
+        if (IdTrip == 0) {
+            return;
+        }
 
-        if (trips.length == 0) return "aucun trip";
+        if (trips.length == 0) { return "aucun trip" };
 
         for (let j = 50; j >= 1; j--) {
             available = true;
@@ -284,7 +290,6 @@ while (input != 0) {
             }
             if (available) {
                 box = j;
-
             }
         }
         for (let i = 0; i < trips.length; i++) {
@@ -305,7 +310,8 @@ while (input != 0) {
             }
             if (i == trips.length - 1) {
                 if (Notfound) {
-                    console.log('train introuvable');
+                    console.log('\n---------------\ntrain introuvable\n---------------\n');
+                    AchatDeTicket();
                 }
             }
         }
@@ -315,47 +321,115 @@ while (input != 0) {
     ///////////
 
     function AnnulerTicket() {
+        console.log('\nentrer 0 pour retourner au menu\n');
         const search = Number(prompt('Identifiant du ticket: '));
-        const FindTicket = tickets.find((e) => e.id === search)
 
-        if (!FindTicket) {
-            console.log('\nTicket introuvable');
+        if (search == 0) {
             return;
         }
 
-        const results = tickets.findIndex(function (res) {
-            return FindTicket.id === res.id
-        })
+        const FindTicket = tickets.find((e) => e.id === search)
+        if (!FindTicket) {
+            console.log('\nTicket introuvable');
+            AnnulerTicket();
+        }
+        else {
+            const results = tickets.findIndex(function (res) {
+                return FindTicket.id === res.id
+            })
 
-        const DeletedTicket = tickets.splice(results, 1);
-        const AugmenteSeat = trips.find((e) => e.id === FindTicket.tripId)
-        AugmenteSeat.availableSeats += 1;
-        console.log('Ticket annulé avec succès.');
+            const DeletedTicket = tickets.splice(results, 1);
+            const AugmenteSeat = trips.find((e) => e.id === FindTicket.tripId)
+            AugmenteSeat.availableSeats += 1;
+            console.log('Ticket annulé avec succès.');
+        }
     }
 
     //////////////
 
     function RechercheTicket() {
+        console.log('\nentrer 0 pour retourner au menu\n');
         const nom = String(prompt('Nom du passager : '));
         const obj = [];
 
-        for (let k = 0; k < tickets.length; k++) {
-            if (nom == tickets[k].passengerName) {
-                for (let i = 0; i < trips.length; i++) {
-                    if (trips[i].id == tickets[k].tripId) {
-                        obj.push({
-                            id: tickets[k].id,
-                            name: tickets[k].passengerName,
-                            depart: trips[i].departure,
-                            fin: trips[i].destination,
-                            seatnum: tickets[k].seatNumber,
-                            prix: tickets[k].price
-                        })
+        if (nom == 0) {
+            return 0;
+        }
+
+        const checking = tickets.find((e) => e.passengerName === nom)
+        if (!checking) {
+            console.log('Passager introuvable');
+            RechercheTicket();
+        }
+
+        else {
+            for (let k = 0; k < tickets.length; k++) {
+                if (nom == tickets[k].passengerName) {
+                    for (let i = 0; i < trips.length; i++) {
+                        if (trips[i].id == tickets[k].tripId) {
+                            obj.push({
+                                id: tickets[k].id,
+                                name: tickets[k].passengerName,
+                                depart: trips[i].departure,
+                                fin: trips[i].destination,
+                                seatnum: tickets[k].seatNumber,
+                                prix: tickets[k].price
+                            })
+
+                            console.log(`Ticket #${obj[i].id}\nPassager : ${obj[i].name}\nTrajet : ${obj[i].depart} --> ${obj[i].fin}\nPlace : ${obj[i].seatnum}\nPrix : ${obj[i].prix} DH\n`)
+                        }
                     }
                 }
             }
         }
-        return obj;
+    }
+
+    //////////////
+
+    function FilterTrips() {
+
+        console.log('\nentrer 0 pour retourner au menu\n');
+        let count = 0;
+        const obj = [];
+        const recherche = String(prompt('Ville de départ : '));
+        if (recherche == 0) {
+            return;
+        }
+
+        const check = trips.find((e) => e.departure.toUpperCase() === recherche.toUpperCase())
+
+        if (!check) {
+            console.log('ville introuvable');
+            FilterTrips();
+        }
+        else {
+            for (let i = 0; i < trips.length; i++) {
+                if (trips[i].departure.toUpperCase() == recherche.toUpperCase()) {
+                    obj.push({
+                        depart: trips[i].departure,
+                        fin: trips[i].destination,
+                        prix: trips[i].price
+                    })
+                    console.log(`\n${obj[i].depart} --> ${obj[i].fin} : ${obj[i].prix} DH`)
+                }
+            }
+        }
+
+    }
+    ////////////
+
+    function TrierTrips() {
+        let box = 0;
+        for (let i = 0; i < trips.length; i++) {
+            for (let j = 0; j < trips.length - i - 1 ; j++) {
+                if (trips[j].price > trips[j + 1].price) {
+                    box = trips[j + 1].price;
+                    trips[j + 1].price = trips[j].price;
+                    trips[j].price = box
+                }
+            }
+        }
+
     }
 
 }

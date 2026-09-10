@@ -215,11 +215,14 @@ while (input != 0) {
             case 4: {
                 AnnulerTicket(); break;
             }
+            case 5: {
+                AffichageGlobal(); break;
+            }
             case 0: {
                 console.log("Quitter...."); break;
             }
             default: {
-                console.log("choix introubale!!!!");
+                console.log("choix introuvable!!!!");
             }
         }
     }
@@ -254,15 +257,18 @@ while (input != 0) {
                 console.log(`Ticket #${tickets[i].id}\nPassager : ${tickets[i].passengerName}\nTrajet : ${DeputTrip} --> ${FinTrip}\nPlace : ${tickets[i].seatNumber}\nPrix : ${tickets[i].price} DH\n`);
             }
         }
+        if (TheChoice == 5) {
+            const holder = RechercheTicket();
+            for (let i = 0; i < holder.length; i++) {
+                console.log(`Ticket #${holder[i].id}\nPassager : ${holder[i].name}\nTrajet : ${holder[i].depart} --> ${holder[i].fin}\nPlace : ${holder[i].seatnum}\nPrix : ${holder[i].prix} DH\n`)
+            }
+        }
 
     }
-
-
-
     ///////////
 
     function AchatDeTicket() {
-        let available, box;
+        let available, box, Notfound = true;
         const NomPassage = String(prompt('nom de passager: '));
         const IdTrip = Number(prompt('trip id: '));
 
@@ -287,6 +293,7 @@ while (input != 0) {
             }
 
             if (trips[i].id == IdTrip) {
+                Notfound = false;
                 tickets.push({ id: (++IdTicket), passengerName: NomPassage, tripId: trips[i].id, seatNumber: box, price: trips[i].price })
                 trips[i].availableSeats -= 1;
 
@@ -294,6 +301,11 @@ while (input != 0) {
                 for (let k = 0; k < tickets.length; k++) {
                     console.log(`Ticket #${tickets[k].id}\nPassager : ${tickets[k].passengerName}\nTrajet : ${trips[i].departure} --> ${trips[i].destination}\nPlace : ${tickets[k].seatNumber}\nPrix : ${tickets[k].price} DH\n`);
 
+                }
+            }
+            if (i == trips.length - 1) {
+                if (Notfound) {
+                    console.log('train introuvable');
                 }
             }
         }
@@ -310,16 +322,40 @@ while (input != 0) {
             console.log('\nTicket introuvable');
             return;
         }
-        
-        
-        for (let i = 0; i < trips.length; i++) {
-            if(FindTicket.tripId == trips[i].id){
-                console.log(FindTicket);
+
+        const results = tickets.findIndex(function (res) {
+            return FindTicket.id === res.id
+        })
+
+        const DeletedTicket = tickets.splice(results, 1);
+        const AugmenteSeat = trips.find((e) => e.id === FindTicket.tripId)
+        AugmenteSeat.availableSeats += 1;
+        console.log('Ticket annulé avec succès.');
+    }
+
+    //////////////
+
+    function RechercheTicket() {
+        const nom = String(prompt('Nom du passager : '));
+        const obj = [];
+
+        for (let k = 0; k < tickets.length; k++) {
+            if (nom == tickets[k].passengerName) {
+                for (let i = 0; i < trips.length; i++) {
+                    if (trips[i].id == tickets[k].tripId) {
+                        obj.push({
+                            id: tickets[k].id,
+                            name: tickets[k].passengerName,
+                            depart: trips[i].departure,
+                            fin: trips[i].destination,
+                            seatnum: tickets[k].seatNumber,
+                            prix: tickets[k].price
+                        })
+                    }
+                }
             }
         }
-       
-
-
+        return obj;
     }
 
 }

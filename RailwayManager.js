@@ -429,9 +429,15 @@ while (input != 0) {
                         fin: trips[i].destination,
                         prix: trips[i].price
                     })
-                    console.log(`\n${obj[i].depart} --> ${obj[i].fin} : ${obj[i].prix} DH`)
+                    count++;
+
                 }
             }
+        }
+
+        for (let i = 0; i < count; i++) {
+            console.log(`\n${obj[i].depart} --> ${obj[i].fin} : ${obj[i].prix} DH`)
+
         }
 
     }

@@ -448,9 +448,9 @@ while (input != 0) {
         for (let i = 0; i < trips.length; i++) {
             for (let j = 0; j < trips.length - i - 1; j++) {
                 if (trips[j].price > trips[j + 1].price) {
-                    box = trips[j + 1].price;
-                    trips[j + 1].price = trips[j].price;
-                    trips[j].price = box
+                    box = trips[j + 1];
+                    trips[j + 1] = trips[j];
+                    trips[j] = box
                 }
             }
         }
